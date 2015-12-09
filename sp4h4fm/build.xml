@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="" name="sp4">
+    <target name="deploy:uat" description="部署War包到UAT服务器">
+        <echo message="Stop Tomcat Server 120.26.49.179 ............"/>
+
+
+        <echo message="Upload War 120.26.49.179 ............"/>                 
+        <scp file="target/libs/sp4h4.war" todir="root@120.26.49.179:/usr/share/tomcat/sp4h4.war" password="BeijingShanghai168" trust="true"/> 
+
+        <echo message="Start Jboss Server 120.26.49.179 ............"/>
+        <echo message="Start OK ............"/>                       
+    </target>   
+
+    <target name="d2uat" depends="deploy:uat">
+	</target>   
+
+
+
+</project>

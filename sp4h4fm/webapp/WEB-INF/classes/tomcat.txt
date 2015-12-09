@@ -1,0 +1,91 @@
+//tomcat_webapps = tomcat_home + '/webapps'
+tomcat_home='tomcat_location'
+tomcat_bin=tomcat_home + '/bin'
+tomcat_start=tomcat_bin + '/startup.sh'
+tomcat_stop=tomcat_bin + '/shutdown.sh'
+tomcat_webapps = tomcat_home + '/webapps'
+
+
+task tom << {
+    if (project.hasProperty('start')) {
+        startTom()
+    } else if (project.hasProperty('stop')) {
+        stopTom()
+    } else if (project.hasProperty('deployNstart')) {
+        stopTom()
+        webappsCopy()
+        startTom()
+    } else {
+        throw new RuntimeException('unrecognized option')
+    }
+}
+
+def stopTom() {
+    executeCmd(tomcat_stop)
+}
+
+def startTom() {
+    executeCmd(tomcat_start)
+}
+
+
+def executeCmd(command) {
+    proc = command.execute()
+    proc.waitFor()
+}
+
+def webappsCopy() {
+    copy {
+        from 'war file location' // could be exploded or war itself
+        into tomcat_webapps
+    }
+}
+ gradle tom -Pstart
+gradle tom -Pstop
+gradle tom -PdeployNstart
+task deploy (dependsOn: war){
+    copy {
+        from "build/libs"
+        into "C:/dev/jetty-distribution-9.1.4.v20140401/webapps"
+        include "*.war"
+    }
+}
+task deploylocal(dependsOn: build) << {
+    println "Copy from ${libsDir.getPath()} into ${tomcatHome}/webapps"
+    copy{
+      from libsDir
+      into "${tomcatHome}/webapps"
+      include '*.war'
+    }
+  }
+  
+// settings.gradle  
+// 对于多模块系统是必须的  
+//include 'subproj1', 'subproj2'  
+  
+
+//---------------scp
+configurations {
+  sshAntTask
+}
+
+dependencies {
+  sshAntTask fileTree(dir:'buildSrc/lib', include:'jsch*.jar')
+  sshAntTask fileTree(dir:'buildSrc/lib', include:'ant-jsch*.jar')
+}
+
+ant.taskdef(
+  name: 'scp',
+  classname: 'org.apache.tools.ant.taskdefs.optional.ssh.Scp',
+  classpath: configurations.sshAntTask.asPath)
+
+task uploadDbServer() {
+  doLast  {
+    ant.scp(
+      file: '...',
+      todir: '...',
+      keyfile: '...' )
+  }
+}
+
+

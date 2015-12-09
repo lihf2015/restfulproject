@@ -1,0 +1,71 @@
+//apply plugin: 'java'
+//apply plugin: 'war' 
+//apply plugin: 'jetty'
+ant.importBuild 'build.xml'
+apply plugin: 'war'  
+  
+webAppDirName = 'webapp'  
+version = ''  
+buildDir = 'target'  
+sourceCompatibility='1.6' 
+tomcatHome='D:/tomcat/apache-tomcat-7.0.55-windows-x64/apache-tomcat-7.0.55/' 
+war{  
+    baseName ="sp4h4"  
+}  
+//定义目录结构   里面需要注释掉，否则生成重复的class
+sourceSets {  
+    main {  
+       // java {  
+        //    srcDirs = ['src/']  
+      //  }  
+        resources {  
+            srcDirs = ['resources/properties','resources/xml']  
+        }  
+    }  
+} 
+
+ //configurations {
+ //   sshAntTask
+ //providedCompile
+//}
+//加载本地依赖  
+dependencies {  
+    providedCompile fileTree(dir: System.getenv("CATALINA_HOME")+'/lib', include: '*.jar')  
+  
+    providedCompile fileTree(dir: 'webapp/WEB-INF/lib', include: '*.jar')  
+   // sshAntTask 'org.apache.ant:ant-jsch:1.9.4'
+    
+}  
+//设置编码  
+tasks.withType(Compile) {  
+    options.encoding = "UTF-8"  
+}
+task deploy(type: Copy) {
+    from war
+    into "${tomcatHome}/webapps"
+    //include '*.war'
+}
+task deploylocal(dependsOn: build) << {
+    println "Copy from ${libsDir.getPath()} into ${tomcatHome}/webapps"
+    copy{
+      from war
+      into "${tomcatHome}/webapps"
+      include '*.war'
+    }
+  }
+  
+ // task uploadDbServer(dependsOn: build) {
+  //         ant {
+ //                   ant.taskdef(
+ //                           name: 'scp',
+ //                           classname: 'org.apache.tools.ant.taskdefs.optional.ssh.Scp',
+ //                           classpath: configurations.providedCompile.asPath
+ //                           )
+//                    ant.scp(
+ //                   file: 'target/libs/sp4h4.war',
+ //                   todir: 'root@120.26.49.179:/usr/share/tomcat/sp4h4.war',
+ //                   password="BeijingShanghai168",
+ //                   trust="true"
+  //                  )
+ //       }
+ //} 

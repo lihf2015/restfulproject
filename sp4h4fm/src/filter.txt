@@ -1,0 +1,13 @@
+    	<filter>
+<filter-name>encodingfilter</filter-name>
+<filter-class>com.andy.filter.EncodingFilter</filter-class>//xiaogu为你的Java程序的包名，EncodingFilter是你的java的类名。
+<init-param>
+<description>encode to UTF-8</description>//UTF-8表示中文编码
+<param-name>encoding</param-name>
+<param-value>UTF-8</param-value>
+</init-param>
+</filter>
+<filter-mapping>
+<filter-name>encodingfilter</filter-name>
+<url-pattern>/*</url-pattern>
+</filter-mapping>
